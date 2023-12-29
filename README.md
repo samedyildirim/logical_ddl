@@ -107,24 +107,42 @@ shadow_table is the table that captured changes are stored in. The table has fiv
 All commands are run by a role with SUPERUSER privilege.
 ### Publisher side
 1. Create extension
+
     `CREATE EXTENSION logical_ddl;`
+
 1. Give a name to your publication
-    `INSERT INTO logical_ddl.settings (true, 'source1');`
+
+    `INSERT INTO logical_ddl.settings VALUES (true, 'source1');`
+
 1. Add tables to your publication
+
     `INSERT INTO logical_ddl.publish_tablelist (relid) VALUES ('table1'::regclass);`
+
     If you want to add all tables in logical replication, you can use following query.
+
     `INSERT INTO logical_ddl.publish_tablelist (relid) SELECT prrelid FROM pg_catalog.pg_publication_rel;`
+
 1. Add shadow_table to your publication
+
     `ALTER PUBLICATION log_pub_1 ADD TABLE logical_ddl.shadow_table;`
     
 ### Subscriber side
 1. Create extension
+
     `CREATE EXTENSION logical_ddl;`
+
 1. Add DDL publisher source name
-    `INSERT INTO logical_ddl.settings (false, 'source1');`
+
+    `INSERT INTO logical_ddl.settings VALUES (false, 'source1');`
+
 1. Add target tables for DDL operations
+
     `INSERT INTO logical_ddl.subscribe_tablelist (source,relid) VALUES ('source1','table1'::regclass);`
+
     If you want to add all tables in logical replication, you can use following query.
+
     `INSERT INTO logical_ddl.subscribe_tablelist (source,relid) SELECT 'source1',srrelid FROM pg_catalog.pg_subscription_rel;`
+
 1. Refresh publication
+
     `ALTER SUBSCRIPTION log_sub_1 REFRESH PUBLICATION;`
