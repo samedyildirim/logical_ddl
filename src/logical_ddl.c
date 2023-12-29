@@ -288,11 +288,9 @@ logical_ddl_altertable(CollectedCommand  *cmd,
         switch (subcmd->subtype)
         {
             case AT_AddColumn:
-            case AT_AddColumnRecurse:
                 logical_ddl_at_addcolumn(column, values);
                 break;
             case AT_DropColumn:
-            case AT_DropColumnRecurse:
                 logical_ddl_at_dropcolumn(column, values);
                 break;
             case AT_AlterColumnType:
