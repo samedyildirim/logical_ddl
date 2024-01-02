@@ -80,7 +80,11 @@ logical_ddl_deparse(PG_FUNCTION_ARGS)
     /* The tupdesc and tuplestore must be created in ecxt_per_query_memory */
     oldcontext = MemoryContextSwitchTo(rsinfo->econtext->ecxt_per_query_memory);
 
+#if PG_VERSION_NUM >= 120000
     tupdesc = CreateTemplateTupleDesc(7);
+#else
+    tupdesc = CreateTemplateTupleDesc(7, false);
+#endif
     TupleDescInitEntry(tupdesc, (AttrNumber) 1, "command_type",
                        TEXTOID, -1, 0);
     TupleDescInitEntry(tupdesc, (AttrNumber) 2, "command_tag",
