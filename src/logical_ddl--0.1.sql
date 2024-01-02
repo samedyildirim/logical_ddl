@@ -43,14 +43,14 @@ create unique index on publish_tablelist (relid);
 create unique index on settings (source);
 create unique index on settings (publish) where publish;
 
-CREATE FUNCTION logical_ddl_deparse(pg_ddl_command)
-  RETURNS table(command_type text, command_tag text, sub_command_type text,
+create or replace function logical_ddl_deparse(pg_ddl_command)
+  returns table(command_type text, command_tag text, sub_command_type text,
                 table_name text, column_name text, new_name text, column_type text
                 /*,query text*/)
-  IMMUTABLE STRICT
-  AS 'MODULE_PATHNAME' LANGUAGE C;
+  immutable strict
+  as 'MODULE_PATHNAME' language c;
 
-create or replace function logical_ddl.create_query(schema_name varchar(64), line jsonb)
+create or replace function create_query(schema_name varchar(64), line jsonb)
   returns text
   language plpgsql
 as $$
@@ -97,7 +97,6 @@ begin
 end;
 $$;
   
-  
 create function f_event_trg () returns event_trigger language plpgsql as $$
 declare
     obj record;
@@ -131,8 +130,7 @@ $$;
 
 create event trigger trg_1 on ddl_command_end execute function f_event_trg();
 
-
-create or replace function logical_ddl.f_shadow_trigger() returns trigger language plpgsql as $$
+create or replace function f_shadow_trigger() returns trigger language plpgsql as $$
 declare
     v_command_string text := null;
     v_command jsonb := new.command;
@@ -175,9 +173,9 @@ begin
 end
 $$;
 
-create trigger trg_shadow after insert on logical_ddl.shadow_table
-    for each row execute function logical_ddl.f_shadow_trigger();
+create trigger trg_shadow after insert on shadow_table
+    for each row execute function f_shadow_trigger();
     
-alter table logical_ddl.shadow_table enable replica trigger trg_shadow;
+alter table shadow_table enable replica trigger trg_shadow;
 
 grant usage on schema logical_ddl to public;

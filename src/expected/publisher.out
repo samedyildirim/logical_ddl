@@ -1,0 +1,955 @@
+CREATE EXTENSION logical_ddl;
+CREATE TABLE public.replicated_table1 (id bigint primary key, c_text text);
+INSERT INTO logical_ddl.settings
+    VALUES (true, 'publisher1');
+INSERT INTO logical_ddl.publish_tablelist (relid)
+    VALUES ('public.replicated_table1'::regclass);
+--Table renaming test
+ALTER TABLE public.replicated_table1
+    RENAME TO renamed_replicated_table1;
+SELECT source, schema_name, command
+    FROM logical_ddl.shadow_table
+    WHERE
+        command->>'command_tag' = 'alter table' AND
+        command->>'sub_command_type' = 'rename table';
+   source   | schema_name |                                                                                              command                                                                                              
+------------+-------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ publisher1 | public      | {"command_type":"simple","command_tag":"alter table","sub_command_type":"rename table","table_name":"replicated_table1","column_name":"","new_name":"renamed_replicated_table1","column_type":""}
+(1 row)
+
+--Column renaming test
+ALTER TABLE public.renamed_replicated_table1
+    RENAME COLUMN c_text TO c_text_renamed;
+SELECT source, schema_name, command
+    FROM logical_ddl.shadow_table
+    WHERE
+        command->>'command_tag' = 'alter table' AND
+        command->>'sub_command_type' = 'rename column';
+   source   | schema_name |                                                                                                command                                                                                                
+------------+-------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ publisher1 | public      | {"command_type":"simple","command_tag":"alter table","sub_command_type":"rename column","table_name":"renamed_replicated_table1","column_name":"c_text","new_name":"c_text_renamed","column_type":""}
+(1 row)
+
+--Column adding tests
+ALTER TABLE public.renamed_replicated_table1
+    ADD COLUMN c_char char;
+SELECT source, schema_name, command
+    FROM logical_ddl.shadow_table
+    WHERE
+        command->>'command_tag' = 'alter table' AND
+        command->>'sub_command_type' = 'add column' AND
+        command->>'column_name' = 'c_char';
+   source   | schema_name |                                                                                                command                                                                                                
+------------+-------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ publisher1 | public      | {"command_type":"alter table","command_tag":"alter table","sub_command_type":"add column","table_name":"renamed_replicated_table1","column_name":"c_char","new_name":"","column_type":"character(1)"}
+(1 row)
+
+ALTER TABLE public.renamed_replicated_table1
+    ADD COLUMN c_char20 char(20);
+SELECT source, schema_name, command
+    FROM logical_ddl.shadow_table
+    WHERE
+        command->>'command_tag' = 'alter table' AND
+        command->>'sub_command_type' = 'add column' AND
+        command->>'column_name' = 'c_char20';
+   source   | schema_name |                                                                                                 command                                                                                                  
+------------+-------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ publisher1 | public      | {"command_type":"alter table","command_tag":"alter table","sub_command_type":"add column","table_name":"renamed_replicated_table1","column_name":"c_char20","new_name":"","column_type":"character(20)"}
+(1 row)
+
+ALTER TABLE public.renamed_replicated_table1
+    ADD COLUMN c_varchar varchar;
+SELECT source, schema_name, command
+    FROM logical_ddl.shadow_table
+    WHERE
+        command->>'command_tag' = 'alter table' AND
+        command->>'sub_command_type' = 'add column' AND
+        command->>'column_name' = 'c_varchar';
+   source   | schema_name |                                                                                                    command                                                                                                    
+------------+-------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ publisher1 | public      | {"command_type":"alter table","command_tag":"alter table","sub_command_type":"add column","table_name":"renamed_replicated_table1","column_name":"c_varchar","new_name":"","column_type":"character varying"}
+(1 row)
+
+ALTER TABLE public.renamed_replicated_table1
+    ADD COLUMN c_varchar20 varchar(20);
+SELECT source, schema_name, command
+    FROM logical_ddl.shadow_table
+    WHERE
+        command->>'command_tag' = 'alter table' AND
+        command->>'sub_command_type' = 'add column' AND
+        command->>'column_name' = 'c_varchar20';
+   source   | schema_name |                                                                                                       command                                                                                                       
+------------+-------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ publisher1 | public      | {"command_type":"alter table","command_tag":"alter table","sub_command_type":"add column","table_name":"renamed_replicated_table1","column_name":"c_varchar20","new_name":"","column_type":"character varying(20)"}
+(1 row)
+
+ALTER TABLE public.renamed_replicated_table1
+    ADD COLUMN c_text text;
+SELECT source, schema_name, command
+    FROM logical_ddl.shadow_table
+    WHERE
+        command->>'command_tag' = 'alter table' AND
+        command->>'sub_command_type' = 'add column' AND
+        command->>'column_name' = 'c_text';
+   source   | schema_name |                                                                                            command                                                                                            
+------------+-------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ publisher1 | public      | {"command_type":"alter table","command_tag":"alter table","sub_command_type":"add column","table_name":"renamed_replicated_table1","column_name":"c_text","new_name":"","column_type":"text"}
+(1 row)
+
+ALTER TABLE public.renamed_replicated_table1
+    ADD COLUMN c_smallint smallint;
+SELECT source, schema_name, command
+    FROM logical_ddl.shadow_table
+    WHERE
+        command->>'command_tag' = 'alter table' AND
+        command->>'sub_command_type' = 'add column' AND
+        command->>'column_name' = 'c_smallint';
+   source   | schema_name |                                                                                                command                                                                                                
+------------+-------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ publisher1 | public      | {"command_type":"alter table","command_tag":"alter table","sub_command_type":"add column","table_name":"renamed_replicated_table1","column_name":"c_smallint","new_name":"","column_type":"smallint"}
+(1 row)
+
+ALTER TABLE public.renamed_replicated_table1
+    ADD COLUMN c_int int;
+SELECT source, schema_name, command
+    FROM logical_ddl.shadow_table
+    WHERE
+        command->>'command_tag' = 'alter table' AND
+        command->>'sub_command_type' = 'add column' AND
+        command->>'column_name' = 'c_int';
+   source   | schema_name |                                                                                             command                                                                                             
+------------+-------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ publisher1 | public      | {"command_type":"alter table","command_tag":"alter table","sub_command_type":"add column","table_name":"renamed_replicated_table1","column_name":"c_int","new_name":"","column_type":"integer"}
+(1 row)
+
+ALTER TABLE public.renamed_replicated_table1
+    ADD COLUMN c_bigint bigint;
+SELECT source, schema_name, command
+    FROM logical_ddl.shadow_table
+    WHERE
+        command->>'command_tag' = 'alter table' AND
+        command->>'sub_command_type' = 'add column' AND
+        command->>'column_name' = 'c_bigint';
+   source   | schema_name |                                                                                              command                                                                                              
+------------+-------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ publisher1 | public      | {"command_type":"alter table","command_tag":"alter table","sub_command_type":"add column","table_name":"renamed_replicated_table1","column_name":"c_bigint","new_name":"","column_type":"bigint"}
+(1 row)
+
+ALTER TABLE public.renamed_replicated_table1
+    ADD COLUMN c_bit bit;
+SELECT source, schema_name, command
+    FROM logical_ddl.shadow_table
+    WHERE
+        command->>'command_tag' = 'alter table' AND
+        command->>'sub_command_type' = 'add column' AND
+        command->>'column_name' = 'c_bit';
+   source   | schema_name |                                                                                            command                                                                                             
+------------+-------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ publisher1 | public      | {"command_type":"alter table","command_tag":"alter table","sub_command_type":"add column","table_name":"renamed_replicated_table1","column_name":"c_bit","new_name":"","column_type":"bit(1)"}
+(1 row)
+
+ALTER TABLE public.renamed_replicated_table1
+    ADD COLUMN c_bit20 bit(20);
+SELECT source, schema_name, command
+    FROM logical_ddl.shadow_table
+    WHERE
+        command->>'command_tag' = 'alter table' AND
+        command->>'sub_command_type' = 'add column' AND
+        command->>'column_name' = 'c_bit20';
+   source   | schema_name |                                                                                              command                                                                                              
+------------+-------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ publisher1 | public      | {"command_type":"alter table","command_tag":"alter table","sub_command_type":"add column","table_name":"renamed_replicated_table1","column_name":"c_bit20","new_name":"","column_type":"bit(20)"}
+(1 row)
+
+ALTER TABLE public.renamed_replicated_table1
+    ADD COLUMN c_bitvarying bit varying;
+SELECT source, schema_name, command
+    FROM logical_ddl.shadow_table
+    WHERE
+        command->>'command_tag' = 'alter table' AND
+        command->>'sub_command_type' = 'add column' AND
+        command->>'column_name' = 'c_bitvarying';
+   source   | schema_name |                                                                                                  command                                                                                                   
+------------+-------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ publisher1 | public      | {"command_type":"alter table","command_tag":"alter table","sub_command_type":"add column","table_name":"renamed_replicated_table1","column_name":"c_bitvarying","new_name":"","column_type":"bit varying"}
+(1 row)
+
+ALTER TABLE public.renamed_replicated_table1
+    ADD COLUMN c_bitvarying20 bit varying(20);
+SELECT source, schema_name, command
+    FROM logical_ddl.shadow_table
+    WHERE
+        command->>'command_tag' = 'alter table' AND
+        command->>'sub_command_type' = 'add column' AND
+        command->>'column_name' = 'c_bitvarying20';
+   source   | schema_name |                                                                                                     command                                                                                                      
+------------+-------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ publisher1 | public      | {"command_type":"alter table","command_tag":"alter table","sub_command_type":"add column","table_name":"renamed_replicated_table1","column_name":"c_bitvarying20","new_name":"","column_type":"bit varying(20)"}
+(1 row)
+
+ALTER TABLE public.renamed_replicated_table1
+    ADD COLUMN c_boolean boolean;
+SELECT source, schema_name, command
+    FROM logical_ddl.shadow_table
+    WHERE
+        command->>'command_tag' = 'alter table' AND
+        command->>'sub_command_type' = 'add column' AND
+        command->>'column_name' = 'c_boolean';
+   source   | schema_name |                                                                                               command                                                                                               
+------------+-------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ publisher1 | public      | {"command_type":"alter table","command_tag":"alter table","sub_command_type":"add column","table_name":"renamed_replicated_table1","column_name":"c_boolean","new_name":"","column_type":"boolean"}
+(1 row)
+
+ALTER TABLE public.renamed_replicated_table1
+    ADD COLUMN c_bytea bytea;
+SELECT source, schema_name, command
+    FROM logical_ddl.shadow_table
+    WHERE
+        command->>'command_tag' = 'alter table' AND
+        command->>'sub_command_type' = 'add column' AND
+        command->>'column_name' = 'c_bytea';
+   source   | schema_name |                                                                                             command                                                                                             
+------------+-------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ publisher1 | public      | {"command_type":"alter table","command_tag":"alter table","sub_command_type":"add column","table_name":"renamed_replicated_table1","column_name":"c_bytea","new_name":"","column_type":"bytea"}
+(1 row)
+
+ALTER TABLE public.renamed_replicated_table1
+    ADD COLUMN c_cidr cidr;
+SELECT source, schema_name, command
+    FROM logical_ddl.shadow_table
+    WHERE
+        command->>'command_tag' = 'alter table' AND
+        command->>'sub_command_type' = 'add column' AND
+        command->>'column_name' = 'c_cidr';
+   source   | schema_name |                                                                                            command                                                                                            
+------------+-------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ publisher1 | public      | {"command_type":"alter table","command_tag":"alter table","sub_command_type":"add column","table_name":"renamed_replicated_table1","column_name":"c_cidr","new_name":"","column_type":"cidr"}
+(1 row)
+
+ALTER TABLE public.renamed_replicated_table1
+    ADD COLUMN c_date date;
+SELECT source, schema_name, command
+    FROM logical_ddl.shadow_table
+    WHERE
+        command->>'command_tag' = 'alter table' AND
+        command->>'sub_command_type' = 'add column' AND
+        command->>'column_name' = 'c_date';
+   source   | schema_name |                                                                                            command                                                                                            
+------------+-------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ publisher1 | public      | {"command_type":"alter table","command_tag":"alter table","sub_command_type":"add column","table_name":"renamed_replicated_table1","column_name":"c_date","new_name":"","column_type":"date"}
+(1 row)
+
+ALTER TABLE public.renamed_replicated_table1
+    ADD COLUMN c_timestamp timestamp without time zone;
+SELECT source, schema_name, command
+    FROM logical_ddl.shadow_table
+    WHERE
+        command->>'command_tag' = 'alter table' AND
+        command->>'sub_command_type' = 'add column' AND
+        command->>'column_name' = 'c_timestamp';
+   source   | schema_name |                                                                                                          command                                                                                                          
+------------+-------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ publisher1 | public      | {"command_type":"alter table","command_tag":"alter table","sub_command_type":"add column","table_name":"renamed_replicated_table1","column_name":"c_timestamp","new_name":"","column_type":"timestamp without time zone"}
+(1 row)
+
+ALTER TABLE public.renamed_replicated_table1
+    ADD COLUMN c_timestamp2 timestamp(2) without time zone;
+SELECT source, schema_name, command
+    FROM logical_ddl.shadow_table
+    WHERE
+        command->>'command_tag' = 'alter table' AND
+        command->>'sub_command_type' = 'add column' AND
+        command->>'column_name' = 'c_timestamp2';
+   source   | schema_name |                                                                                                            command                                                                                                            
+------------+-------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ publisher1 | public      | {"command_type":"alter table","command_tag":"alter table","sub_command_type":"add column","table_name":"renamed_replicated_table1","column_name":"c_timestamp2","new_name":"","column_type":"timestamp(2) without time zone"}
+(1 row)
+
+ALTER TABLE public.renamed_replicated_table1
+    ADD COLUMN c_timestamptz timestamp with time zone;
+SELECT source, schema_name, command
+    FROM logical_ddl.shadow_table
+    WHERE
+        command->>'command_tag' = 'alter table' AND
+        command->>'sub_command_type' = 'add column' AND
+        command->>'column_name' = 'c_timestamptz';
+   source   | schema_name |                                                                                                         command                                                                                                          
+------------+-------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ publisher1 | public      | {"command_type":"alter table","command_tag":"alter table","sub_command_type":"add column","table_name":"renamed_replicated_table1","column_name":"c_timestamptz","new_name":"","column_type":"timestamp with time zone"}
+(1 row)
+
+ALTER TABLE public.renamed_replicated_table1
+    ADD COLUMN c_timestamptz2 timestamp(2) with time zone;
+SELECT source, schema_name, command
+    FROM logical_ddl.shadow_table
+    WHERE
+        command->>'command_tag' = 'alter table' AND
+        command->>'sub_command_type' = 'add column' AND
+        command->>'column_name' = 'c_timestamptz2';
+   source   | schema_name |                                                                                                           command                                                                                                            
+------------+-------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ publisher1 | public      | {"command_type":"alter table","command_tag":"alter table","sub_command_type":"add column","table_name":"renamed_replicated_table1","column_name":"c_timestamptz2","new_name":"","column_type":"timestamp(2) with time zone"}
+(1 row)
+
+ALTER TABLE public.renamed_replicated_table1
+    ADD COLUMN c_time time without time zone;
+SELECT source, schema_name, command
+    FROM logical_ddl.shadow_table
+    WHERE
+        command->>'command_tag' = 'alter table' AND
+        command->>'sub_command_type' = 'add column' AND
+        command->>'column_name' = 'c_time';
+   source   | schema_name |                                                                                                     command                                                                                                     
+------------+-------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ publisher1 | public      | {"command_type":"alter table","command_tag":"alter table","sub_command_type":"add column","table_name":"renamed_replicated_table1","column_name":"c_time","new_name":"","column_type":"time without time zone"}
+(1 row)
+
+ALTER TABLE public.renamed_replicated_table1
+    ADD COLUMN c_time2 time(2) without time zone;
+SELECT source, schema_name, command
+    FROM logical_ddl.shadow_table
+    WHERE
+        command->>'command_tag' = 'alter table' AND
+        command->>'sub_command_type' = 'add column' AND
+        command->>'column_name' = 'c_time2';
+   source   | schema_name |                                                                                                       command                                                                                                       
+------------+-------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ publisher1 | public      | {"command_type":"alter table","command_tag":"alter table","sub_command_type":"add column","table_name":"renamed_replicated_table1","column_name":"c_time2","new_name":"","column_type":"time(2) without time zone"}
+(1 row)
+
+ALTER TABLE public.renamed_replicated_table1
+    ADD COLUMN c_timetz time with time zone;
+SELECT source, schema_name, command
+    FROM logical_ddl.shadow_table
+    WHERE
+        command->>'command_tag' = 'alter table' AND
+        command->>'sub_command_type' = 'add column' AND
+        command->>'column_name' = 'c_timetz';
+   source   | schema_name |                                                                                                    command                                                                                                     
+------------+-------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ publisher1 | public      | {"command_type":"alter table","command_tag":"alter table","sub_command_type":"add column","table_name":"renamed_replicated_table1","column_name":"c_timetz","new_name":"","column_type":"time with time zone"}
+(1 row)
+
+ALTER TABLE public.renamed_replicated_table1
+    ADD COLUMN c_timetz2 time(2) with time zone;
+SELECT source, schema_name, command
+    FROM logical_ddl.shadow_table
+    WHERE
+        command->>'command_tag' = 'alter table' AND
+        command->>'sub_command_type' = 'add column' AND
+        command->>'column_name' = 'c_timetz2';
+   source   | schema_name |                                                                                                      command                                                                                                       
+------------+-------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ publisher1 | public      | {"command_type":"alter table","command_tag":"alter table","sub_command_type":"add column","table_name":"renamed_replicated_table1","column_name":"c_timetz2","new_name":"","column_type":"time(2) with time zone"}
+(1 row)
+
+ALTER TABLE public.renamed_replicated_table1
+    ADD COLUMN c_interval interval;
+SELECT source, schema_name, command
+    FROM logical_ddl.shadow_table
+    WHERE
+        command->>'command_tag' = 'alter table' AND
+        command->>'sub_command_type' = 'add column' AND
+        command->>'column_name' = 'c_interval';
+   source   | schema_name |                                                                                                command                                                                                                
+------------+-------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ publisher1 | public      | {"command_type":"alter table","command_tag":"alter table","sub_command_type":"add column","table_name":"renamed_replicated_table1","column_name":"c_interval","new_name":"","column_type":"interval"}
+(1 row)
+
+ALTER TABLE public.renamed_replicated_table1
+    ADD COLUMN c_interval2 interval(2);
+SELECT source, schema_name, command
+    FROM logical_ddl.shadow_table
+    WHERE
+        command->>'command_tag' = 'alter table' AND
+        command->>'sub_command_type' = 'add column' AND
+        command->>'column_name' = 'c_interval2';
+   source   | schema_name |                                                                                                  command                                                                                                  
+------------+-------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ publisher1 | public      | {"command_type":"alter table","command_tag":"alter table","sub_command_type":"add column","table_name":"renamed_replicated_table1","column_name":"c_interval2","new_name":"","column_type":"interval(2)"}
+(1 row)
+
+ALTER TABLE public.renamed_replicated_table1
+    ADD COLUMN c_interval_hour interval hour to second;
+SELECT source, schema_name, command
+    FROM logical_ddl.shadow_table
+    WHERE
+        command->>'command_tag' = 'alter table' AND
+        command->>'sub_command_type' = 'add column' AND
+        command->>'column_name' = 'c_interval_hour';
+   source   | schema_name |                                                                                                          command                                                                                                          
+------------+-------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ publisher1 | public      | {"command_type":"alter table","command_tag":"alter table","sub_command_type":"add column","table_name":"renamed_replicated_table1","column_name":"c_interval_hour","new_name":"","column_type":"interval hour to second"}
+(1 row)
+
+ALTER TABLE public.renamed_replicated_table1
+    ADD COLUMN c_interval_hour2 interval hour to second(2);
+SELECT source, schema_name, command
+    FROM logical_ddl.shadow_table
+    WHERE
+        command->>'command_tag' = 'alter table' AND
+        command->>'sub_command_type' = 'add column' AND
+        command->>'column_name' = 'c_interval_hour2';
+   source   | schema_name |                                                                                                            command                                                                                                            
+------------+-------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ publisher1 | public      | {"command_type":"alter table","command_tag":"alter table","sub_command_type":"add column","table_name":"renamed_replicated_table1","column_name":"c_interval_hour2","new_name":"","column_type":"interval hour to second(2)"}
+(1 row)
+
+ALTER TABLE public.renamed_replicated_table1
+    ADD COLUMN c_json json;
+SELECT source, schema_name, command
+    FROM logical_ddl.shadow_table
+    WHERE
+        command->>'command_tag' = 'alter table' AND
+        command->>'sub_command_type' = 'add column' AND
+        command->>'column_name' = 'c_json';
+   source   | schema_name |                                                                                            command                                                                                            
+------------+-------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ publisher1 | public      | {"command_type":"alter table","command_tag":"alter table","sub_command_type":"add column","table_name":"renamed_replicated_table1","column_name":"c_json","new_name":"","column_type":"json"}
+(1 row)
+
+ALTER TABLE public.renamed_replicated_table1
+    ADD COLUMN c_jsonb jsonb;
+SELECT source, schema_name, command
+    FROM logical_ddl.shadow_table
+    WHERE
+        command->>'command_tag' = 'alter table' AND
+        command->>'sub_command_type' = 'add column' AND
+        command->>'column_name' = 'c_jsonb';
+   source   | schema_name |                                                                                             command                                                                                             
+------------+-------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ publisher1 | public      | {"command_type":"alter table","command_tag":"alter table","sub_command_type":"add column","table_name":"renamed_replicated_table1","column_name":"c_jsonb","new_name":"","column_type":"jsonb"}
+(1 row)
+
+ALTER TABLE public.renamed_replicated_table1
+    ADD COLUMN c_numeric numeric;
+SELECT source, schema_name, command
+    FROM logical_ddl.shadow_table
+    WHERE
+        command->>'command_tag' = 'alter table' AND
+        command->>'sub_command_type' = 'add column' AND
+        command->>'column_name' = 'c_numeric';
+   source   | schema_name |                                                                                               command                                                                                               
+------------+-------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ publisher1 | public      | {"command_type":"alter table","command_tag":"alter table","sub_command_type":"add column","table_name":"renamed_replicated_table1","column_name":"c_numeric","new_name":"","column_type":"numeric"}
+(1 row)
+
+ALTER TABLE public.renamed_replicated_table1
+    ADD COLUMN c_numeric10 numeric(10);
+SELECT source, schema_name, command
+    FROM logical_ddl.shadow_table
+    WHERE
+        command->>'command_tag' = 'alter table' AND
+        command->>'sub_command_type' = 'add column' AND
+        command->>'column_name' = 'c_numeric10';
+   source   | schema_name |                                                                                                   command                                                                                                   
+------------+-------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ publisher1 | public      | {"command_type":"alter table","command_tag":"alter table","sub_command_type":"add column","table_name":"renamed_replicated_table1","column_name":"c_numeric10","new_name":"","column_type":"numeric(10,0)"}
+(1 row)
+
+ALTER TABLE public.renamed_replicated_table1
+    ADD COLUMN c_numeric10_2 numeric(10,2);
+SELECT source, schema_name, command
+    FROM logical_ddl.shadow_table
+    WHERE
+        command->>'command_tag' = 'alter table' AND
+        command->>'sub_command_type' = 'add column' AND
+        command->>'column_name' = 'c_numeric10_2';
+   source   | schema_name |                                                                                                    command                                                                                                    
+------------+-------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ publisher1 | public      | {"command_type":"alter table","command_tag":"alter table","sub_command_type":"add column","table_name":"renamed_replicated_table1","column_name":"c_numeric10_2","new_name":"","column_type":"numeric(10,2)"}
+(1 row)
+
+ALTER TABLE public.renamed_replicated_table1
+    ADD COLUMN c_decimal decimal;
+SELECT source, schema_name, command
+    FROM logical_ddl.shadow_table
+    WHERE
+        command->>'command_tag' = 'alter table' AND
+        command->>'sub_command_type' = 'add column' AND
+        command->>'column_name' = 'c_decimal';
+   source   | schema_name |                                                                                               command                                                                                               
+------------+-------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ publisher1 | public      | {"command_type":"alter table","command_tag":"alter table","sub_command_type":"add column","table_name":"renamed_replicated_table1","column_name":"c_decimal","new_name":"","column_type":"numeric"}
+(1 row)
+
+ALTER TABLE public.renamed_replicated_table1
+    ADD COLUMN c_decimal10 decimal(10);
+SELECT source, schema_name, command
+    FROM logical_ddl.shadow_table
+    WHERE
+        command->>'command_tag' = 'alter table' AND
+        command->>'sub_command_type' = 'add column' AND
+        command->>'column_name' = 'c_decimal10';
+   source   | schema_name |                                                                                                   command                                                                                                   
+------------+-------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ publisher1 | public      | {"command_type":"alter table","command_tag":"alter table","sub_command_type":"add column","table_name":"renamed_replicated_table1","column_name":"c_decimal10","new_name":"","column_type":"numeric(10,0)"}
+(1 row)
+
+ALTER TABLE public.renamed_replicated_table1
+    ADD COLUMN c_decimal10_2 decimal(10,2);
+SELECT source, schema_name, command
+    FROM logical_ddl.shadow_table
+    WHERE
+        command->>'command_tag' = 'alter table' AND
+        command->>'sub_command_type' = 'add column' AND
+        command->>'column_name' = 'c_decimal10_2';
+   source   | schema_name |                                                                                                    command                                                                                                    
+------------+-------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ publisher1 | public      | {"command_type":"alter table","command_tag":"alter table","sub_command_type":"add column","table_name":"renamed_replicated_table1","column_name":"c_decimal10_2","new_name":"","column_type":"numeric(10,2)"}
+(1 row)
+
+ALTER TABLE public.renamed_replicated_table1
+    ADD COLUMN c_real real;
+SELECT source, schema_name, command
+    FROM logical_ddl.shadow_table
+    WHERE
+        command->>'command_tag' = 'alter table' AND
+        command->>'sub_command_type' = 'add column' AND
+        command->>'column_name' = 'c_real';
+   source   | schema_name |                                                                                            command                                                                                            
+------------+-------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ publisher1 | public      | {"command_type":"alter table","command_tag":"alter table","sub_command_type":"add column","table_name":"renamed_replicated_table1","column_name":"c_real","new_name":"","column_type":"real"}
+(1 row)
+
+ALTER TABLE public.renamed_replicated_table1
+    ADD COLUMN c_double_precision double precision;
+SELECT source, schema_name, command
+    FROM logical_ddl.shadow_table
+    WHERE
+        command->>'command_tag' = 'alter table' AND
+        command->>'sub_command_type' = 'add column' AND
+        command->>'column_name' = 'c_double_precision';
+   source   | schema_name |                                                                                                        command                                                                                                        
+------------+-------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ publisher1 | public      | {"command_type":"alter table","command_tag":"alter table","sub_command_type":"add column","table_name":"renamed_replicated_table1","column_name":"c_double_precision","new_name":"","column_type":"double precision"}
+(1 row)
+
+ALTER TABLE public.renamed_replicated_table1
+    ADD COLUMN c_money money;
+SELECT source, schema_name, command
+    FROM logical_ddl.shadow_table
+    WHERE
+        command->>'command_tag' = 'alter table' AND
+        command->>'sub_command_type' = 'add column' AND
+        command->>'column_name' = 'c_money';
+   source   | schema_name |                                                                                             command                                                                                             
+------------+-------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ publisher1 | public      | {"command_type":"alter table","command_tag":"alter table","sub_command_type":"add column","table_name":"renamed_replicated_table1","column_name":"c_money","new_name":"","column_type":"money"}
+(1 row)
+
+ALTER TABLE public.renamed_replicated_table1
+    ADD COLUMN c_point point;
+SELECT source, schema_name, command
+    FROM logical_ddl.shadow_table
+    WHERE
+        command->>'command_tag' = 'alter table' AND
+        command->>'sub_command_type' = 'add column' AND
+        command->>'column_name' = 'c_point';
+   source   | schema_name |                                                                                             command                                                                                             
+------------+-------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ publisher1 | public      | {"command_type":"alter table","command_tag":"alter table","sub_command_type":"add column","table_name":"renamed_replicated_table1","column_name":"c_point","new_name":"","column_type":"point"}
+(1 row)
+
+ALTER TABLE public.renamed_replicated_table1
+    ADD COLUMN c_line line;
+SELECT source, schema_name, command
+    FROM logical_ddl.shadow_table
+    WHERE
+        command->>'command_tag' = 'alter table' AND
+        command->>'sub_command_type' = 'add column' AND
+        command->>'column_name' = 'c_line';
+   source   | schema_name |                                                                                            command                                                                                            
+------------+-------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ publisher1 | public      | {"command_type":"alter table","command_tag":"alter table","sub_command_type":"add column","table_name":"renamed_replicated_table1","column_name":"c_line","new_name":"","column_type":"line"}
+(1 row)
+
+ALTER TABLE public.renamed_replicated_table1
+    ADD COLUMN c_lseg lseg;
+SELECT source, schema_name, command
+    FROM logical_ddl.shadow_table
+    WHERE
+        command->>'command_tag' = 'alter table' AND
+        command->>'sub_command_type' = 'add column' AND
+        command->>'column_name' = 'c_lseg';
+   source   | schema_name |                                                                                            command                                                                                            
+------------+-------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ publisher1 | public      | {"command_type":"alter table","command_tag":"alter table","sub_command_type":"add column","table_name":"renamed_replicated_table1","column_name":"c_lseg","new_name":"","column_type":"lseg"}
+(1 row)
+
+ALTER TABLE public.renamed_replicated_table1
+    ADD COLUMN c_box box;
+SELECT source, schema_name, command
+    FROM logical_ddl.shadow_table
+    WHERE
+        command->>'command_tag' = 'alter table' AND
+        command->>'sub_command_type' = 'add column' AND
+        command->>'column_name' = 'c_box';
+   source   | schema_name |                                                                                           command                                                                                           
+------------+-------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ publisher1 | public      | {"command_type":"alter table","command_tag":"alter table","sub_command_type":"add column","table_name":"renamed_replicated_table1","column_name":"c_box","new_name":"","column_type":"box"}
+(1 row)
+
+ALTER TABLE public.renamed_replicated_table1
+    ADD COLUMN c_path path;
+SELECT source, schema_name, command
+    FROM logical_ddl.shadow_table
+    WHERE
+        command->>'command_tag' = 'alter table' AND
+        command->>'sub_command_type' = 'add column' AND
+        command->>'column_name' = 'c_path';
+   source   | schema_name |                                                                                            command                                                                                            
+------------+-------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ publisher1 | public      | {"command_type":"alter table","command_tag":"alter table","sub_command_type":"add column","table_name":"renamed_replicated_table1","column_name":"c_path","new_name":"","column_type":"path"}
+(1 row)
+
+ALTER TABLE public.renamed_replicated_table1
+    ADD COLUMN c_polygon polygon;
+SELECT source, schema_name, command
+    FROM logical_ddl.shadow_table
+    WHERE
+        command->>'command_tag' = 'alter table' AND
+        command->>'sub_command_type' = 'add column' AND
+        command->>'column_name' = 'c_polygon';
+   source   | schema_name |                                                                                               command                                                                                               
+------------+-------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ publisher1 | public      | {"command_type":"alter table","command_tag":"alter table","sub_command_type":"add column","table_name":"renamed_replicated_table1","column_name":"c_polygon","new_name":"","column_type":"polygon"}
+(1 row)
+
+ALTER TABLE public.renamed_replicated_table1
+    ADD COLUMN c_circle circle;
+SELECT source, schema_name, command
+    FROM logical_ddl.shadow_table
+    WHERE
+        command->>'command_tag' = 'alter table' AND
+        command->>'sub_command_type' = 'add column' AND
+        command->>'column_name' = 'c_circle';
+   source   | schema_name |                                                                                              command                                                                                              
+------------+-------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ publisher1 | public      | {"command_type":"alter table","command_tag":"alter table","sub_command_type":"add column","table_name":"renamed_replicated_table1","column_name":"c_circle","new_name":"","column_type":"circle"}
+(1 row)
+
+ALTER TABLE public.renamed_replicated_table1
+    ADD COLUMN c_inet inet;
+SELECT source, schema_name, command
+    FROM logical_ddl.shadow_table
+    WHERE
+        command->>'command_tag' = 'alter table' AND
+        command->>'sub_command_type' = 'add column' AND
+        command->>'column_name' = 'c_inet';
+   source   | schema_name |                                                                                            command                                                                                            
+------------+-------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ publisher1 | public      | {"command_type":"alter table","command_tag":"alter table","sub_command_type":"add column","table_name":"renamed_replicated_table1","column_name":"c_inet","new_name":"","column_type":"inet"}
+(1 row)
+
+ALTER TABLE public.renamed_replicated_table1
+    ADD COLUMN c_macaddr macaddr;
+SELECT source, schema_name, command
+    FROM logical_ddl.shadow_table
+    WHERE
+        command->>'command_tag' = 'alter table' AND
+        command->>'sub_command_type' = 'add column' AND
+        command->>'column_name' = 'c_macaddr';
+   source   | schema_name |                                                                                               command                                                                                               
+------------+-------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ publisher1 | public      | {"command_type":"alter table","command_tag":"alter table","sub_command_type":"add column","table_name":"renamed_replicated_table1","column_name":"c_macaddr","new_name":"","column_type":"macaddr"}
+(1 row)
+
+ALTER TABLE public.renamed_replicated_table1
+    ADD COLUMN c_macaddr8 macaddr8;
+SELECT source, schema_name, command
+    FROM logical_ddl.shadow_table
+    WHERE
+        command->>'command_tag' = 'alter table' AND
+        command->>'sub_command_type' = 'add column' AND
+        command->>'column_name' = 'c_macaddr8';
+   source   | schema_name |                                                                                                command                                                                                                
+------------+-------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ publisher1 | public      | {"command_type":"alter table","command_tag":"alter table","sub_command_type":"add column","table_name":"renamed_replicated_table1","column_name":"c_macaddr8","new_name":"","column_type":"macaddr8"}
+(1 row)
+
+ALTER TABLE public.renamed_replicated_table1
+    ADD COLUMN c_tsvector tsvector;
+SELECT source, schema_name, command
+    FROM logical_ddl.shadow_table
+    WHERE
+        command->>'command_tag' = 'alter table' AND
+        command->>'sub_command_type' = 'add column' AND
+        command->>'column_name' = 'c_tsvector';
+   source   | schema_name |                                                                                                command                                                                                                
+------------+-------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ publisher1 | public      | {"command_type":"alter table","command_tag":"alter table","sub_command_type":"add column","table_name":"renamed_replicated_table1","column_name":"c_tsvector","new_name":"","column_type":"tsvector"}
+(1 row)
+
+ALTER TABLE public.renamed_replicated_table1
+    ADD COLUMN c_tsquery tsquery;
+SELECT source, schema_name, command
+    FROM logical_ddl.shadow_table
+    WHERE
+        command->>'command_tag' = 'alter table' AND
+        command->>'sub_command_type' = 'add column' AND
+        command->>'column_name' = 'c_tsquery';
+   source   | schema_name |                                                                                               command                                                                                               
+------------+-------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ publisher1 | public      | {"command_type":"alter table","command_tag":"alter table","sub_command_type":"add column","table_name":"renamed_replicated_table1","column_name":"c_tsquery","new_name":"","column_type":"tsquery"}
+(1 row)
+
+ALTER TABLE public.renamed_replicated_table1
+    ADD COLUMN c_uuid uuid;
+SELECT source, schema_name, command
+    FROM logical_ddl.shadow_table
+    WHERE
+        command->>'command_tag' = 'alter table' AND
+        command->>'sub_command_type' = 'add column' AND
+        command->>'column_name' = 'c_uuid';
+   source   | schema_name |                                                                                            command                                                                                            
+------------+-------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ publisher1 | public      | {"command_type":"alter table","command_tag":"alter table","sub_command_type":"add column","table_name":"renamed_replicated_table1","column_name":"c_uuid","new_name":"","column_type":"uuid"}
+(1 row)
+
+ALTER TABLE public.renamed_replicated_table1
+    ADD COLUMN c_xml xml;
+SELECT source, schema_name, command
+    FROM logical_ddl.shadow_table
+    WHERE
+        command->>'command_tag' = 'alter table' AND
+        command->>'sub_command_type' = 'add column' AND
+        command->>'column_name' = 'c_xml';
+   source   | schema_name |                                                                                           command                                                                                           
+------------+-------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ publisher1 | public      | {"command_type":"alter table","command_tag":"alter table","sub_command_type":"add column","table_name":"renamed_replicated_table1","column_name":"c_xml","new_name":"","column_type":"xml"}
+(1 row)
+
+ALTER TABLE public.renamed_replicated_table1
+    ADD COLUMN c_int4range int4range;
+SELECT source, schema_name, command
+    FROM logical_ddl.shadow_table
+    WHERE
+        command->>'command_tag' = 'alter table' AND
+        command->>'sub_command_type' = 'add column' AND
+        command->>'column_name' = 'c_int4range';
+   source   | schema_name |                                                                                                 command                                                                                                 
+------------+-------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ publisher1 | public      | {"command_type":"alter table","command_tag":"alter table","sub_command_type":"add column","table_name":"renamed_replicated_table1","column_name":"c_int4range","new_name":"","column_type":"int4range"}
+(1 row)
+
+ALTER TABLE public.renamed_replicated_table1
+    ADD COLUMN c_int8range int8range;
+SELECT source, schema_name, command
+    FROM logical_ddl.shadow_table
+    WHERE
+        command->>'command_tag' = 'alter table' AND
+        command->>'sub_command_type' = 'add column' AND
+        command->>'column_name' = 'c_int8range';
+   source   | schema_name |                                                                                                 command                                                                                                 
+------------+-------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ publisher1 | public      | {"command_type":"alter table","command_tag":"alter table","sub_command_type":"add column","table_name":"renamed_replicated_table1","column_name":"c_int8range","new_name":"","column_type":"int8range"}
+(1 row)
+
+ALTER TABLE public.renamed_replicated_table1
+    ADD COLUMN c_numrange numrange;
+SELECT source, schema_name, command
+    FROM logical_ddl.shadow_table
+    WHERE
+        command->>'command_tag' = 'alter table' AND
+        command->>'sub_command_type' = 'add column' AND
+        command->>'column_name' = 'c_numrange';
+   source   | schema_name |                                                                                                command                                                                                                
+------------+-------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ publisher1 | public      | {"command_type":"alter table","command_tag":"alter table","sub_command_type":"add column","table_name":"renamed_replicated_table1","column_name":"c_numrange","new_name":"","column_type":"numrange"}
+(1 row)
+
+ALTER TABLE public.renamed_replicated_table1
+    ADD COLUMN c_tsrange tsrange;
+SELECT source, schema_name, command
+    FROM logical_ddl.shadow_table
+    WHERE
+        command->>'command_tag' = 'alter table' AND
+        command->>'sub_command_type' = 'add column' AND
+        command->>'column_name' = 'c_tsrange';
+   source   | schema_name |                                                                                               command                                                                                               
+------------+-------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ publisher1 | public      | {"command_type":"alter table","command_tag":"alter table","sub_command_type":"add column","table_name":"renamed_replicated_table1","column_name":"c_tsrange","new_name":"","column_type":"tsrange"}
+(1 row)
+
+ALTER TABLE public.renamed_replicated_table1
+    ADD COLUMN c_tstzrange tstzrange;
+SELECT source, schema_name, command
+    FROM logical_ddl.shadow_table
+    WHERE
+        command->>'command_tag' = 'alter table' AND
+        command->>'sub_command_type' = 'add column' AND
+        command->>'column_name' = 'c_tstzrange';
+   source   | schema_name |                                                                                                 command                                                                                                 
+------------+-------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ publisher1 | public      | {"command_type":"alter table","command_tag":"alter table","sub_command_type":"add column","table_name":"renamed_replicated_table1","column_name":"c_tstzrange","new_name":"","column_type":"tstzrange"}
+(1 row)
+
+ALTER TABLE public.renamed_replicated_table1
+    ADD COLUMN c_daterange daterange;
+SELECT source, schema_name, command
+    FROM logical_ddl.shadow_table
+    WHERE
+        command->>'command_tag' = 'alter table' AND
+        command->>'sub_command_type' = 'add column' AND
+        command->>'column_name' = 'c_daterange';
+   source   | schema_name |                                                                                                 command                                                                                                 
+------------+-------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ publisher1 | public      | {"command_type":"alter table","command_tag":"alter table","sub_command_type":"add column","table_name":"renamed_replicated_table1","column_name":"c_daterange","new_name":"","column_type":"daterange"}
+(1 row)
+
+--Column data type changing tests
+ALTER TABLE public.renamed_replicated_table1
+    ALTER COLUMN c_char TYPE varchar(20);
+SELECT source, schema_name, command
+    FROM logical_ddl.shadow_table
+    WHERE
+        command->>'command_tag' = 'alter table' AND
+        command->>'sub_command_type' = 'alter column type' AND
+        command->>'column_name' = 'c_char';
+   source   | schema_name |                                                                                                        command                                                                                                        
+------------+-------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ publisher1 | public      | {"command_type":"alter table","command_tag":"alter table","sub_command_type":"alter column type","table_name":"renamed_replicated_table1","column_name":"c_char","new_name":"","column_type":"character varying(20)"}
+(1 row)
+
+ALTER TABLE public.renamed_replicated_table1
+    ALTER COLUMN c_varchar TYPE text;
+SELECT source, schema_name, command
+    FROM logical_ddl.shadow_table
+    WHERE
+        command->>'command_tag' = 'alter table' AND
+        command->>'sub_command_type' = 'alter column type' AND
+        command->>'column_name' = 'c_varchar';
+   source   | schema_name |                                                                                                 command                                                                                                 
+------------+-------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ publisher1 | public      | {"command_type":"alter table","command_tag":"alter table","sub_command_type":"alter column type","table_name":"renamed_replicated_table1","column_name":"c_varchar","new_name":"","column_type":"text"}
+(1 row)
+
+--Column dropping tests
+ALTER TABLE public.renamed_replicated_table1
+    DROP COLUMN c_int8range;
+SELECT source, schema_name, command
+    FROM logical_ddl.shadow_table
+    WHERE
+        command->>'command_tag' = 'alter table' AND
+        command->>'sub_command_type' = 'drop column' AND
+        command->>'column_name' = 'c_int8range';
+   source   | schema_name |                                                                                             command                                                                                             
+------------+-------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ publisher1 | public      | {"command_type":"alter table","command_tag":"alter table","sub_command_type":"drop column","table_name":"renamed_replicated_table1","column_name":"c_int8range","new_name":"","column_type":""}
+(1 row)
+
+ALTER TABLE public.renamed_replicated_table1
+    DROP COLUMN id;
+SELECT source, schema_name, command
+    FROM logical_ddl.shadow_table
+    WHERE
+        command->>'command_tag' = 'alter table' AND
+        command->>'sub_command_type' = 'drop column' AND
+        command->>'column_name' = 'id';
+   source   | schema_name |                                                                                        command                                                                                         
+------------+-------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ publisher1 | public      | {"command_type":"alter table","command_tag":"alter table","sub_command_type":"drop column","table_name":"renamed_replicated_table1","column_name":"id","new_name":"","column_type":""}
+(1 row)
+
+ALTER TABLE public.renamed_replicated_table1
+    DROP COLUMN c_text_renamed;
+SELECT source, schema_name, command
+    FROM logical_ddl.shadow_table
+    WHERE
+        command->>'command_tag' = 'alter table' AND
+        command->>'sub_command_type' = 'drop column' AND
+        command->>'column_name' = 'c_text_renamed';
+   source   | schema_name |                                                                                              command                                                                                               
+------------+-------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ publisher1 | public      | {"command_type":"alter table","command_tag":"alter table","sub_command_type":"drop column","table_name":"renamed_replicated_table1","column_name":"c_text_renamed","new_name":"","column_type":""}
+(1 row)
+
+ALTER TABLE public.renamed_replicated_table1
+    DROP COLUMN c_macaddr;
+SELECT source, schema_name, command
+    FROM logical_ddl.shadow_table
+    WHERE
+        command->>'command_tag' = 'alter table' AND
+        command->>'sub_command_type' = 'drop column' AND
+        command->>'column_name' = 'c_macaddr';
+   source   | schema_name |                                                                                            command                                                                                            
+------------+-------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ publisher1 | public      | {"command_type":"alter table","command_tag":"alter table","sub_command_type":"drop column","table_name":"renamed_replicated_table1","column_name":"c_macaddr","new_name":"","column_type":""}
+(1 row)
+
+ALTER TABLE public.renamed_replicated_table1
+    DROP COLUMN c_text;
+SELECT source, schema_name, command
+    FROM logical_ddl.shadow_table
+    WHERE
+        command->>'command_tag' = 'alter table' AND
+        command->>'sub_command_type' = 'drop column' AND
+        command->>'column_name' = 'c_text';
+   source   | schema_name |                                                                                          command                                                                                           
+------------+-------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ publisher1 | public      | {"command_type":"alter table","command_tag":"alter table","sub_command_type":"drop column","table_name":"renamed_replicated_table1","column_name":"c_text","new_name":"","column_type":""}
+(1 row)
+
+ALTER TABLE public.renamed_replicated_table1
+    DROP COLUMN c_bigint;
+SELECT source, schema_name, command
+    FROM logical_ddl.shadow_table
+    WHERE
+        command->>'command_tag' = 'alter table' AND
+        command->>'sub_command_type' = 'drop column' AND
+        command->>'column_name' = 'c_bigint';
+   source   | schema_name |                                                                                           command                                                                                            
+------------+-------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ publisher1 | public      | {"command_type":"alter table","command_tag":"alter table","sub_command_type":"drop column","table_name":"renamed_replicated_table1","column_name":"c_bigint","new_name":"","column_type":""}
+(1 row)
+
+ALTER TABLE public.renamed_replicated_table1
+    DROP COLUMN c_jsonb;
+SELECT source, schema_name, command
+    FROM logical_ddl.shadow_table
+    WHERE
+        command->>'command_tag' = 'alter table' AND
+        command->>'sub_command_type' = 'drop column' AND
+        command->>'column_name' = 'c_jsonb';
+   source   | schema_name |                                                                                           command                                                                                           
+------------+-------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ publisher1 | public      | {"command_type":"alter table","command_tag":"alter table","sub_command_type":"drop column","table_name":"renamed_replicated_table1","column_name":"c_jsonb","new_name":"","column_type":""}
+(1 row)
+
+--Multiple subcommand in one alter table command
+ALTER TABLE public.renamed_replicated_table1
+    ADD COLUMN c_msc_text text,
+    ADD COLUMN c_msc_int int,
+    ADD COLUMN c_msc_bigint bigint;
+SELECT source, schema_name, command
+    FROM logical_ddl.shadow_table
+    WHERE
+        command->>'command_tag' = 'alter table' AND
+        command->>'sub_command_type' = 'add column' AND
+        command->>'column_name' LIKE 'c_msc%';
+   source   | schema_name |                                                                                                command                                                                                                
+------------+-------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ publisher1 | public      | {"command_type":"alter table","command_tag":"alter table","sub_command_type":"add column","table_name":"renamed_replicated_table1","column_name":"c_msc_text","new_name":"","column_type":"text"}
+ publisher1 | public      | {"command_type":"alter table","command_tag":"alter table","sub_command_type":"add column","table_name":"renamed_replicated_table1","column_name":"c_msc_int","new_name":"","column_type":"integer"}
+ publisher1 | public      | {"command_type":"alter table","command_tag":"alter table","sub_command_type":"add column","table_name":"renamed_replicated_table1","column_name":"c_msc_bigint","new_name":"","column_type":"bigint"}
+(3 rows)
+
+ALTER TABLE public.renamed_replicated_table1
+    ADD COLUMN c_msc_timestamp timestamp,
+    DROP COLUMN c_msc_int;
+SELECT source, schema_name, command
+    FROM logical_ddl.shadow_table
+    WHERE
+        command->>'command_tag' = 'alter table' AND
+        (command->>'sub_command_type', command->>'column_name') IN 
+            (
+                ('add column', 'c_msc_timestamp'),
+                ('drop column', 'c_msc_int')
+            );
+   source   | schema_name |                                                                                                            command                                                                                                            
+------------+-------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ publisher1 | public      | {"command_type":"alter table","command_tag":"alter table","sub_command_type":"drop column","table_name":"renamed_replicated_table1","column_name":"c_msc_int","new_name":"","column_type":""}
+ publisher1 | public      | {"command_type":"alter table","command_tag":"alter table","sub_command_type":"add column","table_name":"renamed_replicated_table1","column_name":"c_msc_timestamp","new_name":"","column_type":"timestamp without time zone"}
+(2 rows)
+
