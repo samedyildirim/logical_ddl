@@ -14,31 +14,19 @@ You can find detailed information for event triggers: https://www.postgresql.org
 * ALTER TABLE .. DROP COLUMN ..
 
 ## Which data types are compatible
-Following data types have been tested. Other data types are likely compatible, especially without modifier, but they haven't tested, yet.
-* char, varchar, character, and character varying (with and without modifiers, such as varchar and varchar(250))
-* text
-* smallint, integer, bigint
-* bit, bit varying (with or without modifier)
-* boolean
-* bytea
-* cidr
-* date
-* timestamp with time zone, timestamp without time zone (with and without modifier)
-* time with time zone, time without time zone (with or without modifiers)
-* interval (without modifier)
-* json, jsonb
-* numeric (with and without modifiers)
+* All built-in data types are supported.
+* Arrays are supported.
+* Composite data types, domains, and enumerated types are supported.
+    * Replicating definitions of composite data types, domains, and enumerated types themselves are not supported. Data types or domains should already be available on subscriber side.
 
 ## Caveats
 * To be able to run a ALTER TABLE command againt a table, a role has to be owner of the object or has SUPERUSER privilege. logical_ddl works under SUPERUSER privileges.
-* Replicating of *INTERVAL* data type with modifiers hasn't been implemented.
-* Geometric data types and PostGIS haven't been tested, yet.
-* Replication of *array datatypes*, *rangetypes*, *composite data types* and user defined data types haven't been implemented, yet.
+* PostGIS hasn't been tested, yet.
 * *USING* expression of data type changes hasn't been implemented, yet.
-* Arrays!!! varchar(50)[] -> varchar(50)
-* interval with modifier interval hour -> interval(6)
-* replicating default values !!!
-* Extension is still under development. There can be changes near future which can be incompatiple with the current version.
+* Capturing and replicating default value expressions of columns haven't been implemented, yet.
+* Capturing and replicating table and column constraints haven't been implemented, yet.
+* Capturing and replicating indexes haven't been implemented, yet.
+* The extension is still under development. There can be changes near future that can be incompatiple with the current version.
 
 ## Installition
 The extension mainly developed and tested on Linux environment. Compilation and installation consist of three simple main steps.
@@ -57,8 +45,10 @@ logical_ddl=# CREATE EXTENSION logical_ddl;
 ## Configuration
 ### logical_ddl.setting
 Table has two columns.
-1. publish (boolean) **:** controls role of source, one or zero row can exists with true value.
-1. source (varchar(64)) **:** source name, it has to be longer than 2 characters.
+| Column name | Data type   | Definition |
+| ----------- | ----------- | ---------- |
+| publish     | boolean     | Controls role of source, one or zero row can exists with true value. |
+| source      | varchar(64) | Source name, it has to be longer than 2 characters.                  |
 
 Extension can be configured as subsriber, publisher or both. Role of extension is controlled over records in logical_ddl.settings table.
 * If there is a record with 'true' on publish column, extension starts capturing and publishing DDLs.
@@ -66,42 +56,52 @@ Extension can be configured as subsriber, publisher or both. Role of extension i
 
 ### logical_ddl.publish_tablelist
 Table has three columns.
-1. id (int) **:** Primary key attribute
-1. relid (oid) **:** Object ID of source table
-1. cmd_list (text[]) **:** Command list of being captured, default value is '{}'::text[]
+| Column name | Data type   | Definition |
+| ----------- | ----------- | ---------- |
+| id          | int         | Primary key attribute |
+| relid       | oid         | Object ID of source table |
+| cmd_list    | text[]      | Command list of being captured, default value is '{}'::text[] |
 
 This table manages the tables whose DDL changes are captured and replicated. Which changes should be published by extension can be defined on table level over cmd_list column of publish_tablelist table. cmd_list columns is a text array. Currently valid values are;
-* '{}'::text[] **:** Empty array, captures and publish all changes. This is default behaviour.
-* "alter table.rename table" **:** captures *ALTER TABLE .. RENAME TO ..*
-* "alter table.rename column" **:** Captures *ALTER TABLE .. RENAME COLUMN .. TO ..*
-* "alter table.add column" **:** captures *ALTER TABLE .. ADD COLUMN .. ..*
-* "alter table.drop column" **:** captures *ALTER TABLE .. DROP COLUMN ..*
-* "alter table.alter column type" **:** captures *ALTER TABLE .. ALTER COLUMN .. TYPE ..*
+| Value                           | Definition |
+| ------------------------------- | ---------- |
+| '{}'::text[]                    | Empty array, captures and publish all changes. This is default behaviour. |
+| "alter table.rename table"      | Captures *ALTER TABLE .. RENAME TO ..* |
+| "alter table.rename column"     | Captures *ALTER TABLE .. RENAME COLUMN .. TO ..* |
+| "alter table.add column"        | Captures *ALTER TABLE .. ADD COLUMN .. ..* |
+| "alter table.drop column"       | Captures *ALTER TABLE .. DROP COLUMN ..* |
+| "alter table.alter column type" | Captures *ALTER TABLE .. ALTER COLUMN .. TYPE ..* |
 
 ### logical_ddl.subscribe_tablelist
-1. id (int) **:** Primary key attribute
-1. source (varchar(64)) **:** source name of DDLs
-1. relid (oid) **:** Object ID of target table
-1. cmd_list (text[]) **:** Command list of being replayed, default value is '{}'::text[]
+| Column name | Data type   | Definition |
+| ----------- | ----------- | ---------- |
+| id          | int         | Primary key attribute |
+| source      | varchar(64) | Source name of DDLs |
+| relid       | oid         | Object ID of target table |
+| cmd_list    | text[]      | Command list of being replayed, default value is '{}'::text[] |
 
 Valid values of cmd_list is the same with publish_tablelist's cmd_list column.
 
 ## Monitoring
 ### logical_ddl.shadow_table
 shadow_table is the table that captured changes are stored in. The table has five columns.
-1. id (int) **:** identitiy number, unique for each source 
-1. source (varchar(64)) **:** source name of DDLs
-1. schema_name (varchar(64)) **:** schema name of table
-1. command (json) **:** details of DDL command
-1. date (timestamp) **:** when changes is captured
+| Column name | Data type   | Definition |
+| ----------- | ----------- | ---------- |
+| id          | int         | Identitiy number, unique for each source |
+| source      | varchar(64) | Source name of DDLs |
+| schema_name | varchar(64) | Schema name of table |
+| command     | json        | Details of DDL command |
+| date        | timestamp   | When changes is captured |
 
 ### logical_ddl.applied_commands
-1. id (int) **:** identitiy number, unique for each source 
-1. source (varchar(64)) **:** source name of DDLs
-1. command_string (text) **:** generated DDL query on subscriber side
-1. command_id (int) **:** id number of received command in shadow_table.
-1. applied_date (timestamp) **:** when the command is run
-1. is_failed (boolean) **:** is execution of generated DDL command failed?
+| Column name    | Data type   | Definition |
+| -------------- | ----------- | ---------- |
+| id             | int         | Identitiy number, unique for each source |
+| source         | varchar(64) | Source name of DDLs |
+| command_string | text        | Generated DDL query on subscriber side |
+| command_id     | int         | Id number of received command in shadow_table. |
+| applied_date   | timestamp   | When the command is executed |
+| is_failed      | boolean     | Is execution of generated DDL command failed? |
 
 ## Simple Configuration
 All commands are run by a role with SUPERUSER privilege.
