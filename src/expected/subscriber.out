@@ -1317,6 +1317,115 @@ SELECT a.attname, pg_catalog.format_type(a.atttypid, a.atttypmod)
  c_msc_timestamp | timestamp without time zone
 (1 row)
 
+--Column adding tests with array data type
+INSERT INTO logical_ddl.shadow_table (source, schema_name, command)
+    VALUES (
+        'publisher1',
+        'public',
+        '{"command_type":"alter table","command_tag":"alter table","sub_command_type":"add column","table_name":"renamed_replicated_table1","column_name":"c_bitvarying_arr","new_name":"","column_type":"bit varying[]"}'
+    );
+SELECT a.attname, pg_catalog.format_type(a.atttypid, a.atttypmod)
+    FROM pg_catalog.pg_attribute a
+    WHERE
+        a.attrelid = 'public.renamed_replicated_table1'::regclass AND
+        a.attisdropped = false AND
+        a.attname = 'c_bitvarying_arr'
+    ORDER BY a.attnum;
+     attname      |  format_type  
+------------------+---------------
+ c_bitvarying_arr | bit varying[]
+(1 row)
+
+INSERT INTO logical_ddl.shadow_table (source, schema_name, command)
+    VALUES (
+        'publisher1',
+        'public',
+        '{"command_type":"alter table","command_tag":"alter table","sub_command_type":"add column","table_name":"renamed_replicated_table1","column_name":"c_bigint_arr","new_name":"","column_type":"bigint[]"}'
+    );
+SELECT a.attname, pg_catalog.format_type(a.atttypid, a.atttypmod)
+    FROM pg_catalog.pg_attribute a
+    WHERE
+        a.attrelid = 'public.renamed_replicated_table1'::regclass AND
+        a.attisdropped = false AND
+        a.attname = 'c_bigint_arr'
+    ORDER BY a.attnum;
+   attname    | format_type 
+--------------+-------------
+ c_bigint_arr | bigint[]
+(1 row)
+
+INSERT INTO logical_ddl.shadow_table (source, schema_name, command)
+    VALUES (
+        'publisher1',
+        'public',
+        '{"command_type":"alter table","command_tag":"alter table","sub_command_type":"add column","table_name":"renamed_replicated_table1","column_name":"c_varchar_arr","new_name":"","column_type":"character varying[]"}'
+    );
+SELECT a.attname, pg_catalog.format_type(a.atttypid, a.atttypmod)
+    FROM pg_catalog.pg_attribute a
+    WHERE
+        a.attrelid = 'public.renamed_replicated_table1'::regclass AND
+        a.attisdropped = false AND
+        a.attname = 'c_varchar_arr'
+    ORDER BY a.attnum;
+    attname    |     format_type     
+---------------+---------------------
+ c_varchar_arr | character varying[]
+(1 row)
+
+INSERT INTO logical_ddl.shadow_table (source, schema_name, command)
+    VALUES (
+        'publisher1',
+        'public',
+        '{"command_type":"alter table","command_tag":"alter table","sub_command_type":"add column","table_name":"renamed_replicated_table1","column_name":"c_varchar80_arr","new_name":"","column_type":"character varying(80)[]"}'
+    );
+SELECT a.attname, pg_catalog.format_type(a.atttypid, a.atttypmod)
+    FROM pg_catalog.pg_attribute a
+    WHERE
+        a.attrelid = 'public.renamed_replicated_table1'::regclass AND
+        a.attisdropped = false AND
+        a.attname = 'c_varchar80_arr'
+    ORDER BY a.attnum;
+     attname     |       format_type       
+-----------------+-------------------------
+ c_varchar80_arr | character varying(80)[]
+(1 row)
+
+INSERT INTO logical_ddl.shadow_table (source, schema_name, command)
+    VALUES (
+        'publisher1',
+        'public',
+        '{"command_type":"alter table","command_tag":"alter table","sub_command_type":"add column","table_name":"renamed_replicated_table1","column_name":"c_numrange_arr","new_name":"","column_type":"numrange[]"}'
+    );
+SELECT a.attname, pg_catalog.format_type(a.atttypid, a.atttypmod)
+    FROM pg_catalog.pg_attribute a
+    WHERE
+        a.attrelid = 'public.renamed_replicated_table1'::regclass AND
+        a.attisdropped = false AND
+        a.attname = 'c_numrange_arr'
+    ORDER BY a.attnum;
+    attname     | format_type 
+----------------+-------------
+ c_numrange_arr | numrange[]
+(1 row)
+
+INSERT INTO logical_ddl.shadow_table (source, schema_name, command)
+    VALUES (
+        'publisher1',
+        'public',
+        '{"command_type":"alter table","command_tag":"alter table","sub_command_type":"add column","table_name":"renamed_replicated_table1","column_name":"c_numeric10_2_arr","new_name":"","column_type":"numeric(10,2)[]"}'
+    );
+SELECT a.attname, pg_catalog.format_type(a.atttypid, a.atttypmod)
+    FROM pg_catalog.pg_attribute a
+    WHERE
+        a.attrelid = 'public.renamed_replicated_table1'::regclass AND
+        a.attisdropped = false AND
+        a.attname = 'c_numeric10_2_arr'
+    ORDER BY a.attnum;
+      attname      |   format_type   
+-------------------+-----------------
+ c_numeric10_2_arr | numeric(10,2)[]
+(1 row)
+
 DROP EXTENSION logical_ddl CASCADE;
 DROP TABLE IF EXISTS public.renamed_replicated_table1;
 DROP TABLE IF EXISTS public.replicated_table1;

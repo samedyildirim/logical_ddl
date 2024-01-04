@@ -953,6 +953,85 @@ SELECT source, schema_name, command
  publisher1 | public      | {"command_type":"alter table","command_tag":"alter table","sub_command_type":"add column","table_name":"renamed_replicated_table1","column_name":"c_msc_timestamp","new_name":"","column_type":"timestamp without time zone"}
 (2 rows)
 
+--Column adding tests with array data type
+ALTER TABLE public.renamed_replicated_table1
+    ADD COLUMN c_bitvarying_arr bit varying[];
+SELECT source, schema_name, command
+    FROM logical_ddl.shadow_table
+    WHERE
+        command->>'command_tag' = 'alter table' AND
+        command->>'sub_command_type' = 'add column' AND
+        command->>'column_name' = 'c_bitvarying_arr';
+   source   | schema_name |                                                                                                     command                                                                                                      
+------------+-------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ publisher1 | public      | {"command_type":"alter table","command_tag":"alter table","sub_command_type":"add column","table_name":"renamed_replicated_table1","column_name":"c_bitvarying_arr","new_name":"","column_type":"bit varying[]"}
+(1 row)
+
+ALTER TABLE public.renamed_replicated_table1
+    ADD COLUMN c_bigint_arr bigint[];
+SELECT source, schema_name, command
+    FROM logical_ddl.shadow_table
+    WHERE
+        command->>'command_tag' = 'alter table' AND
+        command->>'sub_command_type' = 'add column' AND
+        command->>'column_name' = 'c_bigint_arr';
+   source   | schema_name |                                                                                                 command                                                                                                 
+------------+-------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ publisher1 | public      | {"command_type":"alter table","command_tag":"alter table","sub_command_type":"add column","table_name":"renamed_replicated_table1","column_name":"c_bigint_arr","new_name":"","column_type":"bigint[]"}
+(1 row)
+
+ALTER TABLE public.renamed_replicated_table1
+    ADD COLUMN c_varchar_arr varchar[];
+SELECT source, schema_name, command
+    FROM logical_ddl.shadow_table
+    WHERE
+        command->>'command_tag' = 'alter table' AND
+        command->>'sub_command_type' = 'add column' AND
+        command->>'column_name' = 'c_varchar_arr';
+   source   | schema_name |                                                                                                       command                                                                                                       
+------------+-------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ publisher1 | public      | {"command_type":"alter table","command_tag":"alter table","sub_command_type":"add column","table_name":"renamed_replicated_table1","column_name":"c_varchar_arr","new_name":"","column_type":"character varying[]"}
+(1 row)
+
+ALTER TABLE public.renamed_replicated_table1
+    ADD COLUMN c_varchar80_arr varchar(80)[];
+SELECT source, schema_name, command
+    FROM logical_ddl.shadow_table
+    WHERE
+        command->>'command_tag' = 'alter table' AND
+        command->>'sub_command_type' = 'add column' AND
+        command->>'column_name' = 'c_varchar80_arr';
+   source   | schema_name |                                                                                                          command                                                                                                          
+------------+-------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ publisher1 | public      | {"command_type":"alter table","command_tag":"alter table","sub_command_type":"add column","table_name":"renamed_replicated_table1","column_name":"c_varchar80_arr","new_name":"","column_type":"character varying(80)[]"}
+(1 row)
+
+ALTER TABLE public.renamed_replicated_table1
+    ADD COLUMN c_numrange_arr numrange[];
+SELECT source, schema_name, command
+    FROM logical_ddl.shadow_table
+    WHERE
+        command->>'command_tag' = 'alter table' AND
+        command->>'sub_command_type' = 'add column' AND
+        command->>'column_name' = 'c_numrange_arr';
+   source   | schema_name |                                                                                                   command                                                                                                   
+------------+-------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ publisher1 | public      | {"command_type":"alter table","command_tag":"alter table","sub_command_type":"add column","table_name":"renamed_replicated_table1","column_name":"c_numrange_arr","new_name":"","column_type":"numrange[]"}
+(1 row)
+
+ALTER TABLE public.renamed_replicated_table1
+    ADD COLUMN c_numeric10_2_arr numeric(10,2)[];
+SELECT source, schema_name, command
+    FROM logical_ddl.shadow_table
+    WHERE
+        command->>'command_tag' = 'alter table' AND
+        command->>'sub_command_type' = 'add column' AND
+        command->>'column_name' = 'c_numeric10_2_arr';
+   source   | schema_name |                                                                                                       command                                                                                                       
+------------+-------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ publisher1 | public      | {"command_type":"alter table","command_tag":"alter table","sub_command_type":"add column","table_name":"renamed_replicated_table1","column_name":"c_numeric10_2_arr","new_name":"","column_type":"numeric(10,2)[]"}
+(1 row)
+
 DROP EXTENSION logical_ddl CASCADE;
 DROP TABLE IF EXISTS public.renamed_replicated_table1;
 DROP TABLE IF EXISTS public.replicated_table1;

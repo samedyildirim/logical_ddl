@@ -665,6 +665,61 @@ SELECT source, schema_name, command
                 ('drop column', 'c_msc_int')
             );
 
+--Column adding tests with array data type
+ALTER TABLE public.renamed_replicated_table1
+    ADD COLUMN c_bitvarying_arr bit varying[];
+SELECT source, schema_name, command
+    FROM logical_ddl.shadow_table
+    WHERE
+        command->>'command_tag' = 'alter table' AND
+        command->>'sub_command_type' = 'add column' AND
+        command->>'column_name' = 'c_bitvarying_arr';
+
+ALTER TABLE public.renamed_replicated_table1
+    ADD COLUMN c_bigint_arr bigint[];
+SELECT source, schema_name, command
+    FROM logical_ddl.shadow_table
+    WHERE
+        command->>'command_tag' = 'alter table' AND
+        command->>'sub_command_type' = 'add column' AND
+        command->>'column_name' = 'c_bigint_arr';
+
+ALTER TABLE public.renamed_replicated_table1
+    ADD COLUMN c_varchar_arr varchar[];
+SELECT source, schema_name, command
+    FROM logical_ddl.shadow_table
+    WHERE
+        command->>'command_tag' = 'alter table' AND
+        command->>'sub_command_type' = 'add column' AND
+        command->>'column_name' = 'c_varchar_arr';
+
+ALTER TABLE public.renamed_replicated_table1
+    ADD COLUMN c_varchar80_arr varchar(80)[];
+SELECT source, schema_name, command
+    FROM logical_ddl.shadow_table
+    WHERE
+        command->>'command_tag' = 'alter table' AND
+        command->>'sub_command_type' = 'add column' AND
+        command->>'column_name' = 'c_varchar80_arr';
+
+ALTER TABLE public.renamed_replicated_table1
+    ADD COLUMN c_numrange_arr numrange[];
+SELECT source, schema_name, command
+    FROM logical_ddl.shadow_table
+    WHERE
+        command->>'command_tag' = 'alter table' AND
+        command->>'sub_command_type' = 'add column' AND
+        command->>'column_name' = 'c_numrange_arr';
+
+ALTER TABLE public.renamed_replicated_table1
+    ADD COLUMN c_numeric10_2_arr numeric(10,2)[];
+SELECT source, schema_name, command
+    FROM logical_ddl.shadow_table
+    WHERE
+        command->>'command_tag' = 'alter table' AND
+        command->>'sub_command_type' = 'add column' AND
+        command->>'column_name' = 'c_numeric10_2_arr';
+
 DROP EXTENSION logical_ddl CASCADE;
 DROP TABLE IF EXISTS public.renamed_replicated_table1;
 DROP TABLE IF EXISTS public.replicated_table1;

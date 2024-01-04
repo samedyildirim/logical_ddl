@@ -1038,6 +1038,91 @@ SELECT a.attname, pg_catalog.format_type(a.atttypid, a.atttypmod)
         )
     ORDER BY a.attnum;
 
+--Column adding tests with array data type
+INSERT INTO logical_ddl.shadow_table (source, schema_name, command)
+    VALUES (
+        'publisher1',
+        'public',
+        '{"command_type":"alter table","command_tag":"alter table","sub_command_type":"add column","table_name":"renamed_replicated_table1","column_name":"c_bitvarying_arr","new_name":"","column_type":"bit varying[]"}'
+    );
+SELECT a.attname, pg_catalog.format_type(a.atttypid, a.atttypmod)
+    FROM pg_catalog.pg_attribute a
+    WHERE
+        a.attrelid = 'public.renamed_replicated_table1'::regclass AND
+        a.attisdropped = false AND
+        a.attname = 'c_bitvarying_arr'
+    ORDER BY a.attnum;
+
+INSERT INTO logical_ddl.shadow_table (source, schema_name, command)
+    VALUES (
+        'publisher1',
+        'public',
+        '{"command_type":"alter table","command_tag":"alter table","sub_command_type":"add column","table_name":"renamed_replicated_table1","column_name":"c_bigint_arr","new_name":"","column_type":"bigint[]"}'
+    );
+SELECT a.attname, pg_catalog.format_type(a.atttypid, a.atttypmod)
+    FROM pg_catalog.pg_attribute a
+    WHERE
+        a.attrelid = 'public.renamed_replicated_table1'::regclass AND
+        a.attisdropped = false AND
+        a.attname = 'c_bigint_arr'
+    ORDER BY a.attnum;
+
+INSERT INTO logical_ddl.shadow_table (source, schema_name, command)
+    VALUES (
+        'publisher1',
+        'public',
+        '{"command_type":"alter table","command_tag":"alter table","sub_command_type":"add column","table_name":"renamed_replicated_table1","column_name":"c_varchar_arr","new_name":"","column_type":"character varying[]"}'
+    );
+SELECT a.attname, pg_catalog.format_type(a.atttypid, a.atttypmod)
+    FROM pg_catalog.pg_attribute a
+    WHERE
+        a.attrelid = 'public.renamed_replicated_table1'::regclass AND
+        a.attisdropped = false AND
+        a.attname = 'c_varchar_arr'
+    ORDER BY a.attnum;
+
+INSERT INTO logical_ddl.shadow_table (source, schema_name, command)
+    VALUES (
+        'publisher1',
+        'public',
+        '{"command_type":"alter table","command_tag":"alter table","sub_command_type":"add column","table_name":"renamed_replicated_table1","column_name":"c_varchar80_arr","new_name":"","column_type":"character varying(80)[]"}'
+    );
+SELECT a.attname, pg_catalog.format_type(a.atttypid, a.atttypmod)
+    FROM pg_catalog.pg_attribute a
+    WHERE
+        a.attrelid = 'public.renamed_replicated_table1'::regclass AND
+        a.attisdropped = false AND
+        a.attname = 'c_varchar80_arr'
+    ORDER BY a.attnum;
+
+INSERT INTO logical_ddl.shadow_table (source, schema_name, command)
+    VALUES (
+        'publisher1',
+        'public',
+        '{"command_type":"alter table","command_tag":"alter table","sub_command_type":"add column","table_name":"renamed_replicated_table1","column_name":"c_numrange_arr","new_name":"","column_type":"numrange[]"}'
+    );
+SELECT a.attname, pg_catalog.format_type(a.atttypid, a.atttypmod)
+    FROM pg_catalog.pg_attribute a
+    WHERE
+        a.attrelid = 'public.renamed_replicated_table1'::regclass AND
+        a.attisdropped = false AND
+        a.attname = 'c_numrange_arr'
+    ORDER BY a.attnum;
+
+INSERT INTO logical_ddl.shadow_table (source, schema_name, command)
+    VALUES (
+        'publisher1',
+        'public',
+        '{"command_type":"alter table","command_tag":"alter table","sub_command_type":"add column","table_name":"renamed_replicated_table1","column_name":"c_numeric10_2_arr","new_name":"","column_type":"numeric(10,2)[]"}'
+    );
+SELECT a.attname, pg_catalog.format_type(a.atttypid, a.atttypmod)
+    FROM pg_catalog.pg_attribute a
+    WHERE
+        a.attrelid = 'public.renamed_replicated_table1'::regclass AND
+        a.attisdropped = false AND
+        a.attname = 'c_numeric10_2_arr'
+    ORDER BY a.attnum;
+
 DROP EXTENSION logical_ddl CASCADE;
 DROP TABLE IF EXISTS public.renamed_replicated_table1;
 DROP TABLE IF EXISTS public.replicated_table1;
