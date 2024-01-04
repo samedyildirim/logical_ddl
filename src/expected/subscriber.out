@@ -1426,6 +1426,95 @@ SELECT a.attname, pg_catalog.format_type(a.atttypid, a.atttypmod)
  c_numeric10_2_arr | numeric(10,2)[]
 (1 row)
 
+--List of applied commands
+SELECT source, command_string, is_failed
+    FROM logical_ddl.applied_commands
+    ORDER BY id;
+   source   |                                            command_string                                            | is_failed 
+------------+------------------------------------------------------------------------------------------------------+-----------
+ publisher1 | ALTER TABLE public.replicated_table1 RENAME TO renamed_replicated_table1;                            | f
+ publisher1 | ALTER TABLE public.renamed_replicated_table1 RENAME COLUMN c_text TO c_text_renamed;                 | f
+ publisher1 | ALTER TABLE public.renamed_replicated_table1 ADD COLUMN c_char character(1);                         | f
+ publisher1 | ALTER TABLE public.renamed_replicated_table1 ADD COLUMN c_char20 character(20);                      | f
+ publisher1 | ALTER TABLE public.renamed_replicated_table1 ADD COLUMN c_varchar character varying;                 | f
+ publisher1 | ALTER TABLE public.renamed_replicated_table1 ADD COLUMN c_varchar20 character varying(20);           | f
+ publisher1 | ALTER TABLE public.renamed_replicated_table1 ADD COLUMN c_text text;                                 | f
+ publisher1 | ALTER TABLE public.renamed_replicated_table1 ADD COLUMN c_smallint smallint;                         | f
+ publisher1 | ALTER TABLE public.renamed_replicated_table1 ADD COLUMN c_int integer;                               | f
+ publisher1 | ALTER TABLE public.renamed_replicated_table1 ADD COLUMN c_bigint bigint;                             | f
+ publisher1 | ALTER TABLE public.renamed_replicated_table1 ADD COLUMN c_bit bit(1);                                | f
+ publisher1 | ALTER TABLE public.renamed_replicated_table1 ADD COLUMN c_bit20 bit(20);                             | f
+ publisher1 | ALTER TABLE public.renamed_replicated_table1 ADD COLUMN c_bitvarying bit varying;                    | f
+ publisher1 | ALTER TABLE public.renamed_replicated_table1 ADD COLUMN c_bitvarying20 bit varying(20);              | f
+ publisher1 | ALTER TABLE public.renamed_replicated_table1 ADD COLUMN c_boolean boolean;                           | f
+ publisher1 | ALTER TABLE public.renamed_replicated_table1 ADD COLUMN c_bytea bytea;                               | f
+ publisher1 | ALTER TABLE public.renamed_replicated_table1 ADD COLUMN c_cidr cidr;                                 | f
+ publisher1 | ALTER TABLE public.renamed_replicated_table1 ADD COLUMN c_date date;                                 | f
+ publisher1 | ALTER TABLE public.renamed_replicated_table1 ADD COLUMN c_timestamp timestamp without time zone;     | f
+ publisher1 | ALTER TABLE public.renamed_replicated_table1 ADD COLUMN c_timestamp2 timestamp(2) without time zone; | f
+ publisher1 | ALTER TABLE public.renamed_replicated_table1 ADD COLUMN c_timestamptz timestamp with time zone;      | f
+ publisher1 | ALTER TABLE public.renamed_replicated_table1 ADD COLUMN c_timestamptz2 timestamp(2) with time zone;  | f
+ publisher1 | ALTER TABLE public.renamed_replicated_table1 ADD COLUMN c_time time without time zone;               | f
+ publisher1 | ALTER TABLE public.renamed_replicated_table1 ADD COLUMN c_time2 time(2) without time zone;           | f
+ publisher1 | ALTER TABLE public.renamed_replicated_table1 ADD COLUMN c_timetz time with time zone;                | f
+ publisher1 | ALTER TABLE public.renamed_replicated_table1 ADD COLUMN c_timetz2 time(2) with time zone;            | f
+ publisher1 | ALTER TABLE public.renamed_replicated_table1 ADD COLUMN c_interval interval;                         | f
+ publisher1 | ALTER TABLE public.renamed_replicated_table1 ADD COLUMN c_interval2 interval(2);                     | f
+ publisher1 | ALTER TABLE public.renamed_replicated_table1 ADD COLUMN c_interval_hour interval hour to second;     | f
+ publisher1 | ALTER TABLE public.renamed_replicated_table1 ADD COLUMN c_interval_hour2 interval hour to second(2); | f
+ publisher1 | ALTER TABLE public.renamed_replicated_table1 ADD COLUMN c_json json;                                 | f
+ publisher1 | ALTER TABLE public.renamed_replicated_table1 ADD COLUMN c_jsonb jsonb;                               | f
+ publisher1 | ALTER TABLE public.renamed_replicated_table1 ADD COLUMN c_numeric numeric;                           | f
+ publisher1 | ALTER TABLE public.renamed_replicated_table1 ADD COLUMN c_numeric10 numeric(10,0);                   | f
+ publisher1 | ALTER TABLE public.renamed_replicated_table1 ADD COLUMN c_numeric10_2 numeric(10,2);                 | f
+ publisher1 | ALTER TABLE public.renamed_replicated_table1 ADD COLUMN c_decimal numeric;                           | f
+ publisher1 | ALTER TABLE public.renamed_replicated_table1 ADD COLUMN c_decimal10 numeric(10,0);                   | f
+ publisher1 | ALTER TABLE public.renamed_replicated_table1 ADD COLUMN c_decimal10_2 numeric(10,2);                 | f
+ publisher1 | ALTER TABLE public.renamed_replicated_table1 ADD COLUMN c_real real;                                 | f
+ publisher1 | ALTER TABLE public.renamed_replicated_table1 ADD COLUMN c_double_precision double precision;         | f
+ publisher1 | ALTER TABLE public.renamed_replicated_table1 ADD COLUMN c_money money;                               | f
+ publisher1 | ALTER TABLE public.renamed_replicated_table1 ADD COLUMN c_point point;                               | f
+ publisher1 | ALTER TABLE public.renamed_replicated_table1 ADD COLUMN c_line line;                                 | f
+ publisher1 | ALTER TABLE public.renamed_replicated_table1 ADD COLUMN c_lseg lseg;                                 | f
+ publisher1 | ALTER TABLE public.renamed_replicated_table1 ADD COLUMN c_box box;                                   | f
+ publisher1 | ALTER TABLE public.renamed_replicated_table1 ADD COLUMN c_path path;                                 | f
+ publisher1 | ALTER TABLE public.renamed_replicated_table1 ADD COLUMN c_polygon polygon;                           | f
+ publisher1 | ALTER TABLE public.renamed_replicated_table1 ADD COLUMN c_circle circle;                             | f
+ publisher1 | ALTER TABLE public.renamed_replicated_table1 ADD COLUMN c_inet inet;                                 | f
+ publisher1 | ALTER TABLE public.renamed_replicated_table1 ADD COLUMN c_macaddr macaddr;                           | f
+ publisher1 | ALTER TABLE public.renamed_replicated_table1 ADD COLUMN c_macaddr8 macaddr8;                         | f
+ publisher1 | ALTER TABLE public.renamed_replicated_table1 ADD COLUMN c_tsvector tsvector;                         | f
+ publisher1 | ALTER TABLE public.renamed_replicated_table1 ADD COLUMN c_tsquery tsquery;                           | f
+ publisher1 | ALTER TABLE public.renamed_replicated_table1 ADD COLUMN c_uuid uuid;                                 | f
+ publisher1 | ALTER TABLE public.renamed_replicated_table1 ADD COLUMN c_xml xml;                                   | f
+ publisher1 | ALTER TABLE public.renamed_replicated_table1 ADD COLUMN c_int4range int4range;                       | f
+ publisher1 | ALTER TABLE public.renamed_replicated_table1 ADD COLUMN c_int8range int8range;                       | f
+ publisher1 | ALTER TABLE public.renamed_replicated_table1 ADD COLUMN c_numrange numrange;                         | f
+ publisher1 | ALTER TABLE public.renamed_replicated_table1 ADD COLUMN c_tsrange tsrange;                           | f
+ publisher1 | ALTER TABLE public.renamed_replicated_table1 ADD COLUMN c_tstzrange tstzrange;                       | f
+ publisher1 | ALTER TABLE public.renamed_replicated_table1 ADD COLUMN c_daterange daterange;                       | f
+ publisher1 | ALTER TABLE public.renamed_replicated_table1 ALTER COLUMN c_char TYPE character varying(20);         | f
+ publisher1 | ALTER TABLE public.renamed_replicated_table1 ALTER COLUMN c_varchar TYPE text;                       | f
+ publisher1 | ALTER TABLE public.renamed_replicated_table1 DROP COLUMN c_int8range;                                | f
+ publisher1 | ALTER TABLE public.renamed_replicated_table1 DROP COLUMN id;                                         | f
+ publisher1 | ALTER TABLE public.renamed_replicated_table1 DROP COLUMN c_text_renamed;                             | f
+ publisher1 | ALTER TABLE public.renamed_replicated_table1 DROP COLUMN c_macaddr;                                  | f
+ publisher1 | ALTER TABLE public.renamed_replicated_table1 DROP COLUMN c_text;                                     | f
+ publisher1 | ALTER TABLE public.renamed_replicated_table1 DROP COLUMN c_bigint;                                   | f
+ publisher1 | ALTER TABLE public.renamed_replicated_table1 DROP COLUMN c_jsonb;                                    | f
+ publisher1 | ALTER TABLE public.renamed_replicated_table1 ADD COLUMN c_msc_text text;                             | f
+ publisher1 | ALTER TABLE public.renamed_replicated_table1 ADD COLUMN c_msc_int integer;                           | f
+ publisher1 | ALTER TABLE public.renamed_replicated_table1 ADD COLUMN c_msc_bigint bigint;                         | f
+ publisher1 | ALTER TABLE public.renamed_replicated_table1 DROP COLUMN c_msc_int;                                  | f
+ publisher1 | ALTER TABLE public.renamed_replicated_table1 ADD COLUMN c_msc_timestamp timestamp without time zone; | f
+ publisher1 | ALTER TABLE public.renamed_replicated_table1 ADD COLUMN c_bitvarying_arr bit varying[];              | f
+ publisher1 | ALTER TABLE public.renamed_replicated_table1 ADD COLUMN c_bigint_arr bigint[];                       | f
+ publisher1 | ALTER TABLE public.renamed_replicated_table1 ADD COLUMN c_varchar_arr character varying[];           | f
+ publisher1 | ALTER TABLE public.renamed_replicated_table1 ADD COLUMN c_varchar80_arr character varying(80)[];     | f
+ publisher1 | ALTER TABLE public.renamed_replicated_table1 ADD COLUMN c_numrange_arr numrange[];                   | f
+ publisher1 | ALTER TABLE public.renamed_replicated_table1 ADD COLUMN c_numeric10_2_arr numeric(10,2)[];           | f
+(81 rows)
+
 DROP EXTENSION logical_ddl CASCADE;
 DROP TABLE IF EXISTS public.renamed_replicated_table1;
 DROP TABLE IF EXISTS public.replicated_table1;

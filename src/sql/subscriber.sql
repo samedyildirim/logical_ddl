@@ -1123,6 +1123,11 @@ SELECT a.attname, pg_catalog.format_type(a.atttypid, a.atttypmod)
         a.attname = 'c_numeric10_2_arr'
     ORDER BY a.attnum;
 
+--List of applied commands
+SELECT source, command_string, is_failed
+    FROM logical_ddl.applied_commands
+    ORDER BY id;
+
 DROP EXTENSION logical_ddl CASCADE;
 DROP TABLE IF EXISTS public.renamed_replicated_table1;
 DROP TABLE IF EXISTS public.replicated_table1;
