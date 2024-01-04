@@ -953,3 +953,7 @@ SELECT source, schema_name, command
  publisher1 | public      | {"command_type":"alter table","command_tag":"alter table","sub_command_type":"add column","table_name":"renamed_replicated_table1","column_name":"c_msc_timestamp","new_name":"","column_type":"timestamp without time zone"}
 (2 rows)
 
+DROP EXTENSION logical_ddl CASCADE;
+DROP TABLE IF EXISTS public.renamed_replicated_table1;
+DROP TABLE IF EXISTS public.replicated_table1;
+NOTICE:  table "replicated_table1" does not exist, skipping

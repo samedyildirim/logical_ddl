@@ -664,3 +664,7 @@ SELECT source, schema_name, command
                 ('add column', 'c_msc_timestamp'),
                 ('drop column', 'c_msc_int')
             );
+
+DROP EXTENSION logical_ddl CASCADE;
+DROP TABLE IF EXISTS public.renamed_replicated_table1;
+DROP TABLE IF EXISTS public.replicated_table1;
