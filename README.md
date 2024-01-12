@@ -28,7 +28,7 @@ You can find detailed information for event triggers: https://www.postgresql.org
 * Capturing and replicating indexes haven't been implemented, yet.
 * The extension is still under development. There can be changes near future that can be incompatiple with the current version.
 
-## Installition
+## Installation
 The extension mainly developed and tested on Linux environment. Compilation and installation consist of three simple main steps.
 
 ```
