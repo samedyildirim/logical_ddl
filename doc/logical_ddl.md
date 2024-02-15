@@ -1,5 +1,7 @@
 # Logical DDL
-logical_ddl is an extension for PostgreSQL that captures DDL operations against tables and helps them replicate over logical replication to subscribers. The extension is to decrease required amount of manual operations for DDLs and risk of stopping replication due to table definition mismatches when logical replication is used.
+logical_ddl is an extension for PostgreSQL that captures DDL operations on tables and helps them replicate over logical replication to subscribers. The extension is to decrease required amount of manual operations for DDLs and risk of stopping replication due to table definition mismatches when logical replication is used.
+
+PostgreSQL 11 and above are supported.
 
 ## How it works?
 logical_ddl captures DDL operations by helping of event trigger feature of PostgreSQL. After execution of DDL command, trigger function, which is written in PL/pgSQL and C, is called for deparsing executed DDL command and saves it into a table that is also replicated over logical replication. When subscriber receives details of DDL operation, it generates an SQL (DDL) query so as to apply the same or similar changes to the table on the subscriber's side and executes it.
