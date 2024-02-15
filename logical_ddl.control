@@ -1,5 +1,5 @@
 comment = 'DDL replication over logical replication'
-default_version = '0.1'
+default_version = '0.1.0'
 module_pathname = '$libdir/logical_ddl'
 relocatable = false
 schema = 'logical_ddl'
