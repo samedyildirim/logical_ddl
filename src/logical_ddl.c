@@ -1,4 +1,5 @@
 #include "postgres.h"
+#include "utils/tuplestore.h"
 #include "funcapi.h"
 #include "miscadmin.h"
 #include "catalog/pg_type.h"
@@ -310,7 +311,7 @@ logical_ddl_get_datatype(TypeName *typeName)
     int32       typemod;
 	Oid	        typeOid;
 	HeapTuple   tup;
-    bits16      flags = FORMAT_TYPE_TYPEMOD_GIVEN | FORMAT_TYPE_ALLOW_INVALID;
+    uint16      flags = FORMAT_TYPE_TYPEMOD_GIVEN | FORMAT_TYPE_ALLOW_INVALID;
 
     if (typeName->typeOid != InvalidOid)
     {
