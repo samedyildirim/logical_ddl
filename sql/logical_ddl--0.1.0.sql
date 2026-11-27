@@ -189,7 +189,7 @@ BEGIN
         v_command->>'command_tag' IS NULL OR
         v_command->>'sub_command_type' IS NULL
     THEN
-        RAUSE WARNING 'Invalid command received, skipping: %', NEW;
+        RAISE WARNING 'Invalid command received, skipping: %', NEW;
         RETURN NULL;
     END IF;
 
